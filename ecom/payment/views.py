@@ -6,6 +6,10 @@ from cart.cart import Cart
 from django.contrib import messages
 from store.models import Product, Profile
 import datetime
+import requests
+
+
+FASTAPI_URL = "http://127.0.0.1:8001" 
 
 def orders(request, pk):
       if request.user.is_authenticated and request.user.is_superuser:
@@ -71,67 +75,82 @@ def shipped_dash(request):
         return redirect('home')
 
 def process_order(request):
-     if request.POST:
-          cart = Cart(request)  # Initialize the cart object tied to the current session/request
-          cart_products = cart.get_prods  # Get all products currently in the cart
-          quantities = cart.get_quants  # Get corresponding quantities for each product
-          totals = cart.cart_total() 
+    if request.POST:
+        cart = Cart(request)
+        cart_products = cart.get_prods
+        quantities = cart.get_quants
+        totals = cart.cart_total()
+        my_shipping = request.session.get('my_shipping')
 
-        #   #get billing info from the last page 
-        #   payment_form = PaymentForm(request.POST or None)
+        full_name = my_shipping['shipping_full_name']
+        email = my_shipping['shipping_email']
+        shipping_address = f"{my_shipping['shipping_address1']}\n{my_shipping['shipping_address2']}\n{my_shipping['shipping_city']}\n{my_shipping['shipping_state']}\n{my_shipping['shipping_zipcode']}\n{my_shipping['shipping_country']}"
+        amount_paid = totals
 
-          my_shipping = request.session.get('my_shipping')
+        if request.user.is_authenticated:
+            user = request.user
+            create_order = Order(
+                user=user,
+                full_name=full_name,
+                email=email,
+                shipping_address=shipping_address,
+                amount_paid=amount_paid
+            )
+            create_order.save()
+            order_id = create_order.pk
 
-          #gather order info
-          full_name = my_shipping['shipping_full_name']
-          email = my_shipping['shipping_email']
-          shipping_address = f"{my_shipping['shipping_address1']}\n{my_shipping['shipping_address2']}\n{my_shipping['shipping_city']}\n{my_shipping['shipping_state']}\n{my_shipping['shipping_zipcode']}\n{my_shipping['shipping_country']}"
-          amount_paid = totals
-          
-          if request.user.is_authenticated:
-             user = request.user
+            # Save each item to OrderItem
+            for product in cart_products():
+                product_id = product.id
+                price = product.sale_price if product.is_sale else product.price
+                for key, value in quantities().items():
+                    if int(key) == product.id:
+                        OrderItem.objects.create(
+                            order_id=order_id,
+                            product_id=product_id,
+                            quantity=value,
+                            price=price
+                        )
 
-             create_order = Order(user=user, full_name = full_name, email = email, shipping_address = shipping_address, amount_paid = amount_paid)
-             create_order.save()
+            # 🔗 Sync to FastAPI backend
+            try:
+                order_payload = {
+                    "user_id": user.id,
+                    "full_name": full_name,
+                    "email": email,
+                    "shipping_address": shipping_address,
+                    "amount_paid": amount_paid,
+                    "items": [
+                        {"product_id": p.id, "quantity": quantities()[str(p.id)], "price": float(p.price)}
+                        for p in cart_products()
+                    ]
+                }
+                requests.post(f"{FASTAPI_URL}/checkout", json=order_payload)
+            except Exception as e:
+                print("FastAPI order sync failed:", e)
 
-             order_id = create_order.pk
+            # Clear cart after checkout
+            for key in list(request.session.keys()):
+                if key == "session_key":
+                    del request.session[key]
+            Profile.objects.filter(user__id=request.user.id).update(old_cart="")
 
-             for product in cart_products():
-                 product_id = product.id
+            messages.success(request, "Order Placed!")
+            return redirect('home')
 
-                 if product.is_sale:
-                      price = product.sale_price
-                 else:
-                      price = product.price
+        else:
+            Order.objects.create(
+                full_name=full_name,
+                email=email,
+                shipping_address=shipping_address,
+                amount_paid=amount_paid
+            )
+            messages.success(request, "Order Placed!")
+            return redirect('home')
 
-                 for key, value in quantities().items():
-                      if int(key) == product.id:
-                           
-                           create_order_item = OrderItem(order_id = order_id, product_id = product_id, quantity = value, price = price)
-                           create_order_item.save()
-                
-             for key in list(request.session.keys()):
-                 if key == "session_key":
-                      
-                      del request.session[key]
-
-            # delete cart from db
-             current_user = Profile.objects.filter(user__id = request.user.id)
-
-             current_user.update(old_cart = "")
-
-             messages.success(request, "Order Placed!")
-             return redirect('home')
-          else:
-             create_order = Order(full_name = full_name, email = email, shipping_address = shipping_address, amount_paid = amount_paid)
-             create_order.save()
-
-             messages.success(request, "Order Placed!")
-             return redirect('home')
-
-     else:
-         messages.success(request, "Access Denied")
-         return redirect('home')
+    else:
+        messages.success(request, "Access Denied")
+        return redirect('home')
 
 def billing_info(request):
     if request.POST:
