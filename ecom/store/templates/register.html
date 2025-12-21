@@ -1,41 +1,219 @@
 {% extends 'base.html' %}
 {% block content %}
 
- <!-- Header-->
-        <header class="bg-success py-5">
-            <div class="container px-4 px-lg-5 my-5">
-                <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Register</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">Register for user account...</p>
-                </div>
-            </div>
-        </header>
-
-        <div class="container">
-            <div class="row">
-                
-                    <div class="col-md-6 offset-md-3">
-                      
-                       <br><br>
-<form method="POST" action="{% url 'register' %}">
-    {% csrf_token %}
-
-    {{ form.as_p }}
-    <br><br>
-    <button type="submit" class="btn btn-secondary">Register</button>
+<style>
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        position: relative;
+        z-index: 2;
+    }
     
-   
-</form>
-<br><br>
-<br><br>
-<br><br>
-                        <br><br>
-                        <br><br>
-                        <br><br>
-                        <br><br>
-                        <br><br>
-                    </div>
-               
-            </div>
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(255, 0, 255, 0.3);
+        max-width: 500px;
+        width: 100%;
+        padding: 3rem 2.5rem;
+        position: relative;
+        overflow: hidden;
+        border: 3px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .register-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--y2k-pink), var(--y2k-purple), var(--y2k-cyan), var(--y2k-lime));
+    }
+    
+    .register-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .register-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        font-family: 'Righteous', cursive;
+        background: linear-gradient(135deg, var(--y2k-pink), var(--y2k-purple), var(--y2k-cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+    
+    .register-header p {
+        color: #718096;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--y2k-purple);
+        margin-bottom: 0.5rem;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 3px solid rgba(255, 0, 255, 0.2);
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(247, 250, 252, 0.8);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--y2k-purple);
+        background: white;
+        box-shadow: 0 0 20px rgba(131, 56, 236, 0.3);
+    }
+    
+    .form-group .helptext {
+        font-size: 0.75rem;
+        color: #a0aec0;
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    .register-btn {
+        width: 100%;
+        padding: 0.875rem;
+        background: linear-gradient(135deg, var(--y2k-cyan), var(--y2k-blue));
+        border: 3px solid rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        font-family: 'Righteous', cursive;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(6, 255, 240, 0.4);
+        margin-top: 0.5rem;
+        text-transform: uppercase;
+    }
+    
+    .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(6, 255, 240, 0.6);
+        background: linear-gradient(135deg, var(--y2k-blue), var(--y2k-purple));
+    }
+    
+    .register-btn:active {
+        transform: translateY(0);
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 2px solid rgba(255, 0, 255, 0.2);
+    }
+    
+    .divider span {
+        padding: 0 1rem;
+        color: #a0aec0;
+        font-size: 0.875rem;
+        font-weight: 700;
+    }
+    
+    .login-link {
+        text-align: center;
+        color: #718096;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    .login-link a {
+        color: var(--y2k-purple);
+        font-weight: 700;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .login-link a:hover {
+        color: var(--y2k-pink);
+    }
+    
+    /* Django form styling */
+    .register-card p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .register-card ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .register-card ul li {
+        font-size: 0.75rem;
+        color: #a0aec0;
+        margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 576px) {
+        .register-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .register-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h1>✨ Join Us ✨</h1>
+            <p>Create your Y2K Shop account</p>
         </div>
+        
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <button type="submit" class="register-btn">🚀 Register Now</button>
+        </form>
+        
+        <div class="divider">
+            <span>or</span>
+        </div>
+        
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Sign in</a>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

@@ -1,0 +1,54 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$eXJFuR2mHPWSJNpaqP2fUf$XNP0NbrWayxhFQ86PM/NHFsE1O3PAlX2TsPGjEh3E2w=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "root",
+    "first_name": "",
+    "last_name": "",
+    "email": "louisneolok@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-21T14:45:01.810Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "store.profile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "root"
+    ],
+    "date_modified": "2025-12-21T14:45:02.103Z",
+    "phone": "",
+    "address1": "",
+    "address2": "",
+    "city": "",
+    "state": "",
+    "zipcode": "",
+    "country": "",
+    "old_cart": null
+  }
+},
+{
+  "model": "payment.shippingaddress",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "root"
+    ],
+    "shipping_full_name": "",
+    "shipping_email": "",
+    "shipping_address1": "",
+    "shipping_address2": null,
+    "shipping_city": "",
+    "shipping_state": null,
+    "shipping_zipcode": null,
+    "shipping_country": ""
+  }
+}
+]

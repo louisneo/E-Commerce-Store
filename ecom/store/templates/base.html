@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -8,33 +7,264 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Django Ecommerce</title>
+        <title>✨ Y2K Shop ✨</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
         <!-- Bootstrap icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google Fonts - Y2K Style -->
+        <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
         crossorigin="anonymous"></script>
+        
+        <style>
+            /* Y2K AESTHETIC STYLES */
+            :root {
+                --y2k-pink: #FF006E;
+                --y2k-purple: #8338EC;
+                --y2k-blue: #3A86FF;
+                --y2k-cyan: #06FFF0;
+                --y2k-lime: #CCFF00;
+                --y2k-orange: #FB5607;
+                --y2k-dark: #1a0033;
+                --y2k-light: #FFF5F8;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Space Grotesk', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+                min-height: 100vh;
+                position: relative;
+            }
+            
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: 
+                    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px),
+                    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            @keyframes gradientShift {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+            
+            .container, .row, .col, [class*="col-"] {
+                position: relative;
+                z-index: 2;
+            }
+            
+            /* Glossy Card Effect */
+            .card {
+                background: rgba(255, 255, 255, 0.95) !important;
+                border: 3px solid rgba(255, 255, 255, 0.8) !important;
+                border-radius: 25px !important;
+                box-shadow: 
+                    0 8px 32px rgba(31, 38, 135, 0.37),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                    0 0 20px rgba(255, 0, 255, 0.3) !important;
+                backdrop-filter: blur(10px);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                overflow: hidden;
+                position: relative;
+            }
+            
+            .card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transform: rotate(45deg);
+                transition: all 0.6s;
+            }
+            
+            .card:hover {
+                transform: translateY(-10px) scale(1.02);
+                box-shadow: 
+                    0 15px 40px rgba(255, 0, 255, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 1),
+                    0 0 30px rgba(0, 255, 255, 0.4) !important;
+            }
+            
+            .card:hover::before {
+                left: 100%;
+            }
+            
+            .card-img-top {
+                border-radius: 20px 20px 0 0 !important;
+                border-bottom: 3px solid rgba(255, 0, 255, 0.3);
+            }
+            
+            /* Bubbly Buttons */
+            .btn {
+                font-family: 'Righteous', cursive;
+                font-weight: 700;
+                padding: 12px 30px;
+                border-radius: 50px;
+                border: 3px solid rgba(255, 255, 255, 0.8);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 
+                    0 4px 15px rgba(0, 0, 0, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            }
+            
+            .btn-success, .btn-outline-dark {
+                background: linear-gradient(135deg, var(--y2k-pink), var(--y2k-purple)) !important;
+                color: white !important;
+                border-color: rgba(255, 255, 255, 0.5) !important;
+            }
+            
+            .btn-success:hover, .btn-outline-dark:hover {
+                background: linear-gradient(135deg, var(--y2k-purple), var(--y2k-blue)) !important;
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 
+                    0 8px 25px rgba(255, 0, 255, 0.5),
+                    inset 0 1px 0 rgba(255, 255, 255, 1);
+            }
+            
+            .btn-danger {
+                background: linear-gradient(135deg, var(--y2k-orange), var(--y2k-pink)) !important;
+                color: white !important;
+                border-color: rgba(255, 255, 255, 0.5) !important;
+            }
+            
+            .btn-danger:hover {
+                background: linear-gradient(135deg, var(--y2k-pink), var(--y2k-orange)) !important;
+                transform: translateY(-3px) scale(1.05);
+            }
+            
+            .btn-secondary {
+                background: linear-gradient(135deg, var(--y2k-cyan), var(--y2k-blue)) !important;
+                color: white !important;
+                border-color: rgba(255, 255, 255, 0.5) !important;
+            }
+            
+            /* Badge Y2K Style */
+            .badge {
+                font-family: 'Righteous', cursive;
+                background: linear-gradient(135deg, var(--y2k-lime), var(--y2k-cyan)) !important;
+                color: var(--y2k-dark) !important;
+                padding: 8px 15px;
+                border-radius: 20px;
+                border: 2px solid white;
+                box-shadow: 0 4px 15px rgba(204, 255, 0, 0.5);
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            
+            /* Alert Messages */
+            .alert {
+                background: rgba(255, 255, 255, 0.95) !important;
+                border: 3px solid var(--y2k-cyan) !important;
+                border-radius: 20px !important;
+                font-weight: 600;
+                box-shadow: 0 8px 25px rgba(6, 255, 240, 0.3);
+            }
+            
+            /* Headers */
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Righteous', cursive;
+                text-shadow: 
+                    2px 2px 0px rgba(255, 0, 255, 0.3),
+                    4px 4px 0px rgba(0, 255, 255, 0.3);
+            }
+            
+            /* Form Inputs */
+            .form-control, .form-select {
+                background: rgba(255, 255, 255, 0.9) !important;
+                border: 3px solid rgba(255, 0, 255, 0.3) !important;
+                border-radius: 15px !important;
+                padding: 12px 20px;
+                transition: all 0.3s;
+            }
+            
+            .form-control:focus, .form-select:focus {
+                background: white !important;
+                border-color: var(--y2k-purple) !important;
+                box-shadow: 0 0 20px rgba(131, 56, 236, 0.5) !important;
+            }
+            
+            /* Star Icons */
+            .bi-star-fill {
+                color: var(--y2k-lime);
+                filter: drop-shadow(0 0 5px var(--y2k-lime));
+                animation: twinkle 1.5s infinite;
+            }
+            
+            @keyframes twinkle {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+            
+            /* Price Styling */
+            strike {
+                color: #999;
+                text-decoration-color: var(--y2k-pink);
+                text-decoration-thickness: 2px;
+            }
+            
+            /* Floating Elements */
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+            
+            .card-body {
+                animation: float 3s ease-in-out infinite;
+            }
+        </style>
     </head>
     <body>
        {% include 'navbar.html' %}
        {% if messages %}
               {% for message in messages %}
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-  {{ message }}
+  ✨ {{ message }} ✨
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>  
-                    
               {% endfor %}
        {% endif %}
        {% block content %}
        {% endblock %}
+       
         <!-- Footer-->
-        <footer class="py-5 bg-success">
-            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+        <footer class="py-5" style="background: linear-gradient(135deg, var(--y2k-purple), var(--y2k-pink)); position: relative; z-index: 2;">
+            <div class="container">
+                <p class="m-0 text-center text-white" style="font-family: 'Righteous', cursive; font-size: 1.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                    ✨ © 2023 Y2K SHOP - All Rights Reserved ✨
+                </p>
+            </div>
         </footer>
+        
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
