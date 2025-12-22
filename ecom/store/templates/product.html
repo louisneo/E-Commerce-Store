@@ -1,90 +1,544 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    .product-detail-section {
+        padding: 140px 0 100px;
+        min-height: 100vh;
+    }
+    
+    .product-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .product-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: start;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @media (max-width: 992px) {
+        .product-detail-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+    }
+    
+    /* Product Image with Hover Zoom */
+    .product-image-container {
+        position: sticky;
+        top: 120px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .product-image-wrapper {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        position: relative;
+        cursor: crosshair;
+    }
+    
+    .product-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    /* Zoom Lens */
+    .zoom-lens {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        width: 150px;
+        height: 150px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(2px);
+    }
+    
+    .product-image-wrapper:hover .zoom-lens {
+        opacity: 1;
+    }
+    
+    /* Zoomed Result */
+    .zoom-result {
+        position: absolute;
+        top: 0;
+        left: calc(100% + 30px);
+        width: 500px;
+        height: 500px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    
+    .product-image-wrapper:hover ~ .zoom-result {
+        opacity: 1;
+    }
+    
+    .zoom-result img {
+        position: absolute;
+        width: auto;
+        height: auto;
+    }
+    
+    @media (max-width: 1400px) {
+        .zoom-result {
+            display: none;
+        }
+    }
+    
+    /* Product Info */
+    .product-info {
+        animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+    
+    .product-badge {
+        display: inline-block;
+        background: var(--text);
+        color: var(--bg);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 24px;
+    }
+    
+    .product-title {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+    
+    .product-rating {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+    }
+    
+    .product-rating i {
+        color: #ffd700;
+        font-size: 1.125rem;
+    }
+    
+    .product-description {
+        font-size: 1.125rem;
+        line-height: 1.8;
+        color: var(--text-dim);
+        margin-bottom: 32px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .product-price-section {
+        margin-bottom: 32px;
+    }
+    
+    .price-wrapper {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .current-price {
+        font-size: 3rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+    }
+    
+    .original-price {
+        font-size: 1.75rem;
+        color: var(--text-dim);
+        text-decoration: line-through;
+        font-weight: 600;
+    }
+    
+    .savings-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    /* Quantity Selector */
+    .quantity-wrapper {
+        margin-bottom: 32px;
+        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+    }
+    
+    .quantity-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    
+    .quantity-selector select {
+        flex: 1;
+        background: var(--card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        padding: 14px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .quantity-selector select:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .btn-add-cart {
+        flex: 2;
+        background: var(--text) !important;
+        color: var(--bg) !important;
+        border: none !important;
+        padding: 18px 32px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .btn-add-cart:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(255, 255, 255, 0.15);
+    }
+    
+    .btn-add-cart:active {
+        transform: translateY(-1px);
+    }
+    
+    .btn-back {
+        flex: 1;
+        background: var(--card) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        padding: 18px 32px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+    
+    .btn-back:hover {
+        background: var(--surface) !important;
+        transform: translateY(-3px);
+    }
+    
+    /* Product Features */
+    .product-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+    }
+    
+    .feature-item {
+        text-align: center;
+    }
+    
+    .feature-icon {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        opacity: 0.6;
+    }
+    
+    .feature-text {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+        font-weight: 500;
+    }
+    
+    /* Success State */
+    .btn-success-state {
+        background: #10b981 !important;
+    }
+    
+    /* Loading State */
+    .btn-loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
-        <div class="container">
-<div class="card mb-3">
-<div class="row g-0">
-<div class="col-md-4">
-<img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
-</div>
-<div class="col-md-8">
-<div class="card-body">
-    <center>
-<h5 class="card-title">{{ product.name }}</h5>
-<p class="card-text justified">{{ product.description }}</p>
-
-  {% if product.is_sale %}
-   <div class="d-flex justify-content-center small text-warning mb-2">
-                                        <div class="bi-star-fill"></div>
-                                            &nbsp;&nbsp;SALE!&nbsp;&nbsp;
-                                        <div class="bi-star-fill"></div>
-                                    </div>
-
-                                    <!-- Product price-->
-                                   <strike>
-                                     ₱{{ product.price }}
-                                    </strike>
-                                    &nbsp;
-                                     ₱{{ product.sale_price }}
-                                    <br>
-                                    {{ product.description }}
-  {% else %}
-     ₱{{ product.price }}
-  {% endif %}
-  
-  <br><br>
-
-  <div class="row justify-content-center">
-    <div class="col-md-2">Quantity:</div>
-    <div class="col-md-2">
-<select class="form-select form-select-sm" id="qty-cart">
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="4">4</option>
-  <option value="5">5</option>
-   </select>
+<section class="product-detail-section">
+    <div class="product-detail-container">
+        <div class="product-detail-grid">
+            <!-- Product Image with Zoom -->
+            <div class="product-image-container">
+                <div class="product-image-wrapper" id="image-wrapper">
+                    <div class="zoom-lens" id="zoom-lens"></div>
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" id="product-image" />
+                </div>
+                <div class="zoom-result" id="zoom-result">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" id="zoom-image" />
+                </div>
+            </div>
+            
+            <!-- Product Info -->
+            <div class="product-info">
+                {% if product.is_sale %}
+                <span class="product-badge">SALE</span>
+                {% endif %}
+                
+                <h1 class="product-title">{{ product.name }}</h1>
+                
+                <div class="product-rating">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                
+                <p class="product-description">{{ product.description }}</p>
+                
+                <div class="product-price-section">
+                    <div class="price-wrapper">
+                        {% if product.is_sale %}
+                            <span class="current-price">₱{{ product.sale_price }}</span>
+                            <span class="original-price">₱{{ product.price }}</span>
+                        {% else %}
+                            <span class="current-price">₱{{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                    {% if product.is_sale %}
+                    <span class="savings-badge">
+                        Save ₱{{ product.price|floatformat:0|add:"-"|add:product.sale_price|floatformat:0 }}
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="quantity-wrapper">
+                    <label class="quantity-label">Quantity:</label>
+                    <div class="quantity-selector">
+                        <select id="qty-cart">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-add-cart" type="button" value="{{ product.id }}" id="add-cart">
+                        <i class="bi bi-cart-fill"></i>
+                        <span>Add To Cart</span>
+                    </button>
+                    <a href="{% url 'home' %}" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back</span>
+                    </a>
+                </div>
+                
+                <div class="product-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">🚚</div>
+                        <div class="feature-text">Free Shipping</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <div class="feature-text">Authentic</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">↩</div>
+                        <div class="feature-text">Easy Returns</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</section>
 
- 
-  <br><br>
-<a href="{% url 'home' %}" class="btn btn-success">Home</a>
-<button class="btn btn-success" type="button" value="{{ product.id }}" id="add-cart">Add To Cart</button>
-    </center>
-</div>
-</div>
-</div>
-</div>
-</div>
-    <br><br>
-              
-
-    <script>
-        $(document).on('click', '#add-cart', function(e) {
-            e.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'cart_add' %}",
-                data: {
-                    product_id: $('#add-cart').val(),
-                    product_qty: $('#qty-cart option:selected').text(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    action: 'post'
-                },
-                success: function(json){
-                    // console.log(json)
-                    document.getElementById("cart_quantity").
-                       textContent = json.qty
-
+<script>
+    // Hover Zoom Functionality
+    const imageWrapper = document.getElementById('image-wrapper');
+    const lens = document.getElementById('zoom-lens');
+    const result = document.getElementById('zoom-result');
+    const img = document.getElementById('product-image');
+    const zoomImg = document.getElementById('zoom-image');
+    
+    let cx, cy;
+    
+    // Calculate zoom ratio
+    function initZoom() {
+        cx = result.offsetWidth / lens.offsetWidth;
+        cy = result.offsetHeight / lens.offsetHeight;
+        zoomImg.style.width = (img.width * cx) + "px";
+        zoomImg.style.height = (img.height * cx) + "px";
+    }
+    
+    // Move lens and zoomed image
+    function moveLens(e) {
+        e.preventDefault();
+        const pos = getCursorPos(e);
+        let x = pos.x - (lens.offsetWidth / 2);
+        let y = pos.y - (lens.offsetHeight / 2);
+        
+        // Prevent lens from going outside image
+        if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
+        if (x < 0) x = 0;
+        if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
+        if (y < 0) y = 0;
+        
+        // Set lens position
+        lens.style.left = x + "px";
+        lens.style.top = y + "px";
+        
+        // Display zoomed area
+        zoomImg.style.left = "-" + (x * cx) + "px";
+        zoomImg.style.top = "-" + (y * cy) + "px";
+    }
+    
+    function getCursorPos(e) {
+        const a = img.getBoundingClientRect();
+        const x = e.pageX - a.left - window.pageXOffset;
+        const y = e.pageY - a.top - window.pageYOffset;
+        return {x: x, y: y};
+    }
+    
+    // Initialize on image load
+    img.addEventListener('load', initZoom);
+    if (img.complete) initZoom();
+    
+    // Add event listeners
+    imageWrapper.addEventListener('mousemove', moveLens);
+    imageWrapper.addEventListener('mouseenter', function() {
+        lens.style.opacity = '1';
+        result.style.opacity = '1';
+        initZoom();
+    });
+    imageWrapper.addEventListener('mouseleave', function() {
+        lens.style.opacity = '0';
+        result.style.opacity = '0';
+    });
+    
+    // Recalculate on window resize
+    window.addEventListener('resize', initZoom);
+    
+    // Add to cart functionality
+    $(document).on('click', '#add-cart', function(e) {
+        e.preventDefault();
+        
+        const button = $(this);
+        const originalText = button.html();
+        
+        // Disable button and show loading state
+        button.addClass('btn-loading');
+        button.html('<i class="bi bi-hourglass-split"></i> Adding...');
+        
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'cart_add' %}",
+            data: {
+                product_id: button.val(),
+                product_qty: $('#qty-cart option:selected').text(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function(json){
+                // Update cart quantity
+                document.getElementById("cart_quantity").textContent = json.qty;
+                
+                // Show success state
+                button.removeClass('btn-loading');
+                button.addClass('btn-success-state');
+                button.html('<i class="bi bi-check-circle-fill"></i> Added to Cart!');
+                
+                // Reload after delay
+                setTimeout(function() {
                     location.reload();
-                },
-
-                error: function(xhr, errmsg, err){
-                     
-                }
-            });
+                }, 1500);
+            },
+            error: function(xhr, errmsg, err){
+                console.error('Error adding to cart:', errmsg);
+                
+                // Show error state
+                button.removeClass('btn-loading');
+                button.html('<i class="bi bi-x-circle-fill"></i> Error!');
+                
+                // Reset button after delay
+                setTimeout(function() {
+                    button.html(originalText);
+                }, 2000);
+            }
         });
-    </script>
+    });
+</script>
+
 {% endblock %}

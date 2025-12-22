@@ -1,105 +1,164 @@
 {% extends 'base.html' %}
 {% block content %}
 
- <!-- Header-->
-        <header class="bg-success py-5">
-            <div class="container px-4 px-lg-5 my-5">
-                <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Search Products</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">Find what you're looking for...</p>
-                </div>
-            </div>
-        </header>
+<style>
+    .search-hero {
+        padding: 140px 0 80px;
+        text-align: center;
+    }
+    
+    .search-hero h1 {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 16px;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .search-hero p {
+        font-size: 1.25rem;
+        color: var(--text-dim);
+        animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+    
+    .search-container {
+        max-width: 800px;
+        margin: 0 auto 80px;
+        padding: 0 20px;
+        animation: fadeInUp 0.8s ease-out 0.4s backwards;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+    
+    .search-input {
+        flex: 1;
+        background: var(--card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        padding: 18px 24px;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+        background: var(--surface) !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
+        outline: none;
+    }
+    
+    .search-btn {
+        background: var(--text) !important;
+        color: var(--bg) !important;
+        border: none !important;
+        padding: 18px 36px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+    }
+    
+    .results-section {
+        padding: 40px 0 100px;
+    }
+    
+    .results-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .results-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
-        <div class="container">
-            <div class="row">
-                <center>
-                    <br>
-                    <br>
-                    <div class="col-10">
-                        <div class="card">
-                            <div class="card-header">
-                                Search Products
-                            </div>
-                            <form action="{% url 'search' %}" method="POST">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <input type="text" name="searched" class="form-control"
-                                        placeholder="Search For Products" style="width: 70%; margin-top: 10px;">
-                                </div>
-                                <button type="submit" class="btn btn-success">Search Products</button>
-                                <br><br>
-                            </form>
+<!-- Hero Section -->
+<section class="search-hero">
+    <div class="container">
+        <h1>Search Products</h1>
+        <p>Find what you're looking for...</p>
+    </div>
+</section>
 
-                         </div>
-                        
-                    </div>
-                    <br><br>
-                      <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                    {% if searched %}
-                       {% for product in searched %}
-                          {% if product.is_sale %}
-                     <div class="col mb-5">
-                        <div class="card h-100">
-                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem;">Sale</div>
-                            <!-- Product image-->
-                            <img class="card-img-top" src="{{ product.image.url }}" alt="..." />
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder">{{ product.name }}</h5>
+<!-- Search Form -->
+<div class="search-container">
+    <form action="{% url 'search' %}" method="POST" class="search-form">
+        {% csrf_token %}
+        <input type="text" name="searched" class="search-input" placeholder="Search for luxury perfumes..." required>
+        <button type="submit" class="search-btn">Search</button>
+    </form>
+</div>
 
-                                    <div class="d-flex justify-content-center small text-warning mb-2">
-                                        <div class="bi-star-fill"></div>
-                                            &nbsp;&nbsp;SALE!&nbsp;&nbsp;
-                                        <div class="bi-star-fill"></div>
-                                    </div>
-
-                                    <!-- Product price-->
-                                   <strike>
-                                     ₱{{ product.price }}
-                                    </strike>
-                                    &nbsp;
-                                     ₱{{ product.sale_price }}
-                                    <br>
-                                    {{ product.description }}
-                                </div>
-                            </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View product</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    {% else %}
-                        <div class="col mb-5">
-                            <div class="card h-100">
-                                <!-- Product image-->
-                                <img class="card-img-top" src="{{ product.image.url }}" alt="..." />
-                                <!-- Product details-->
-                                <div class="card-body p-4">
-                                    <div class="text-center">
-                                        <!-- Product name-->
-                                        <h5 class="fw-bolder">{{ product.name }}</h5>
-                                        <!-- Product price-->
-                                        ₱{{ product.price }}
-                                        <br>
-                                        {{ product.description }}
-                                    </div>
-                                </div>
-                                <!-- Product actions-->
-                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                    <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View product</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                       {% endfor %}
-
-                    {% endif %}
-            </div>
-                </center>
-            </div>
+<!-- Results Section -->
+{% if searched %}
+<section class="results-section">
+    <div class="container">
+        <div class="results-header">
+            <h2>Search Results</h2>
+            <p style="color: var(--text-dim);">Found {{ searched|length }} product{{ searched|length|pluralize }}</p>
         </div>
+        
+        <div class="product-grid" style="max-width: 1400px; margin: 0 auto;">
+            {% for product in searched %}
+            <div class="product-card">
+                {% if product.is_sale %}
+                <div class="sale-badge">SALE</div>
+                {% endif %}
+                
+                <a href="{% url 'product' product.id %}" style="text-decoration: none; color: inherit;">
+                    <div class="product-image-wrapper">
+                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description }}</p>
+                        
+                        <div class="product-price">
+                            {% if product.is_sale %}
+                                <span class="price-current">₱{{ product.sale_price }}</span>
+                                <span class="price-original">₱{{ product.price }}</span>
+                            {% else %}
+                                <span class="price-current">₱{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                        
+                      <button class="btn btn-primary" type="button">
+    View Details
+</button>
+
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 {% endblock %}

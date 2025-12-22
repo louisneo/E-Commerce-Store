@@ -1,206 +1,61 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<style>
-    .y2k-header {
-        background: linear-gradient(135deg, #FF006E, #8338EC, #3A86FF);
-        padding: 80px 0;
-        position: relative;
-        overflow: hidden;
-        border-bottom: 5px solid var(--y2k-cyan);
-    }
-    
-    .y2k-header::before {
-        content: '✨';
-        position: absolute;
-        font-size: 100px;
-        opacity: 0.1;
-        animation: float 6s ease-in-out infinite;
-        left: 10%;
-        top: 20%;
-    }
-    
-    .y2k-header::after {
-        content: '💫';
-        position: absolute;
-        font-size: 80px;
-        opacity: 0.1;
-        animation: float 8s ease-in-out infinite;
-        right: 15%;
-        bottom: 20%;
-    }
-    
-    .y2k-header h1 {
-        font-family: 'Righteous', cursive;
-        font-size: 4rem;
-        color: white;
-        text-shadow: 
-            3px 3px 0px rgba(0, 0, 0, 0.2),
-            5px 5px 0px rgba(255, 255, 0, 0.3),
-            7px 7px 0px rgba(0, 255, 255, 0.3);
-        animation: bounce 2s ease-in-out infinite;
-    }
-    
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .y2k-header p {
-        font-size: 1.3rem;
-        color: rgba(255, 255, 255, 0.95);
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        font-weight: 600;
-    }
-    
-    .product-section {
-        background: transparent;
-        padding: 60px 0;
-        position: relative;
-        z-index: 2;
-    }
-    
-    .product-card {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    .product-card:hover {
-        transform: translateY(-15px) rotate(2deg);
-    }
-    
-    .sale-badge {
-        background: linear-gradient(135deg, var(--y2k-lime), var(--y2k-cyan)) !important;
-        color: var(--y2k-dark) !important;
-        font-family: 'Righteous', cursive;
-        padding: 10px 20px;
-        font-size: 1rem;
-        border: 3px solid white;
-        box-shadow: 0 4px 15px rgba(204, 255, 0, 0.6);
-        animation: pulse 2s infinite, rotate 3s linear infinite;
-    }
-    
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(-5deg); }
-        75% { transform: rotate(5deg); }
-        100% { transform: rotate(0deg); }
-    }
-    
-    .card-title {
-        font-family: 'Righteous', cursive;
-        color: var(--y2k-purple);
-        font-size: 1.3rem;
-        text-shadow: 1px 1px 2px rgba(255, 0, 255, 0.2);
-    }
-    
-    .price-tag {
-        font-family: 'Righteous', cursive;
-        font-size: 1.5rem;
-        color: var(--y2k-pink);
-        text-shadow: 1px 1px 2px rgba(255, 0, 110, 0.3);
-    }
-    
-    .sale-price {
-        color: var(--y2k-cyan);
-        font-size: 1.8rem;
-        text-shadow: 0 0 10px rgba(6, 255, 240, 0.5);
-    }
-</style>
-
-<!-- Header-->
-<header class="y2k-header">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">✨ SHOP IN STYLE ✨</h1>
-            <p class="lead fw-normal mb-0">🌟 Welcome to the ultimate Y2K shopping experience! 🌟</p>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>The future of fragrance.</h1>
+        <p>Discover our curated collection of luxury perfumes. Each scent tells a story, crafted with precision and passion.</p>
+        <div class="hero-cta">
+            <a href="#products" class="btn btn-primary">Explore Collection</a>
+            <a href="{% url 'about' %}" class="btn btn-secondary">Learn More</a>
         </div>
     </div>
-</header>
+</section>
 
-<!-- Section-->
-<section class="product-section">
-    <div class="container px-4 px-lg-5 mt-5">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+<!-- Products Section -->
+<section class="products-section" id="products">
+    <div class="container">
+        <div class="section-header">
+            <h2>Premium Collection</h2>
+            <p>Handpicked fragrances for the modern connoisseur</p>
+        </div>
+        
+        <div class="product-grid">
             {% for product in products %}
-            {% if product.is_sale %}
-            <div class="col mb-5">
-                <div class="card h-100 product-card">
-                    <div class="badge sale-badge position-absolute" style="top: 0.5rem; right: 0.5rem;">
-                        🔥 SALE! 🔥
+            <div class="product-card">
+                {% if product.is_sale %}
+                <div class="sale-badge">SALE</div>
+                {% endif %}
+                
+                <a href="{% url 'product' product.id %}" style="text-decoration: none; color: inherit;">
+                    <div class="product-image-wrapper">
+                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}" />
                     </div>
-                    <!-- Product image-->
-                    <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" />
-                    <!-- Product details-->
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <!-- Product name-->
-                            <h5 class="fw-bolder card-title">{{ product.name }}</h5>
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description }}</p>
+                        
+                        <div class="product-price">
+                            {% if product.is_sale %}
+                                <span class="price-current">₱{{ product.sale_price }}</span>
+                                <span class="price-original">₱{{ product.price }}</span>
+                            {% else %}
+                                <span class="price-current">₱{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <button class="btn btn-primary" type="button">
+    View Details
+</button>
 
-                            <div class="d-flex justify-content-center small text-warning mb-2">
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                            </div>
-
-                            <!-- Product price-->
-                            <div class="price-tag">
-                                <strike>₱{{ product.price }}</strike>
-                            </div>
-                            <div class="sale-price">
-                                ₱{{ product.sale_price }}
-                            </div>
-                            <p style="margin-top: 10px; color: #666;">{{ product.description }}</p>
-                        </div>
                     </div>
-                    <!-- Product actions-->
-                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center">
-                            <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">
-                                🛍️ View Product
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                </a>
             </div>
-            {% else %}
-            <div class="col mb-5">
-                <div class="card h-100 product-card">
-                    <!-- Product image-->
-                    <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" />
-                    <!-- Product details-->
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <!-- Product name-->
-                            <h5 class="fw-bolder card-title">{{ product.name }}</h5>
-                            
-                            <div class="d-flex justify-content-center small mb-2">
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                                <div class="bi-star-fill"></div>
-                            </div>
-                            
-                            <!-- Product price-->
-                            <div class="price-tag">₱{{ product.price }}</div>
-                            <p style="margin-top: 10px; color: #666;">{{ product.description }}</p>
-                        </div>
-                    </div>
-                    <!-- Product actions-->
-                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center">
-                            <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">
-                                🛍️ View Product
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
             {% endfor %}
         </div>
     </div>
 </section>
+
 {% endblock %}

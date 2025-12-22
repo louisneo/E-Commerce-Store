@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'ecommerce_db'),
         'USER': os.getenv('DB_USER', 'ecommerce_user'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'ecommerce_secure_pass_123'),
-        'HOST': os.getenv('DB_HOST', 'db'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),  
         'PORT': os.getenv('DB_PORT', '5432'),
         'OPTIONS': {
             'connect_timeout': 10,
@@ -97,6 +97,12 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': dj_database_url.parse(
+#         'postgresql://neondb_owner:npg_vby1zSBeIA8K@ep-snowy-forest-ahzulkm6-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+#     )
+    
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
