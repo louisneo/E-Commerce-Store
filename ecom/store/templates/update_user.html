@@ -1,45 +1,197 @@
 {% extends 'base.html' %}
 {% block content %}
 
- <!-- Header-->
-        <header class="bg-success py-5">
-            <div class="container px-4 px-lg-5 my-5">
-                <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Update Profile</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">Update user profile...</p>
-                </div>
-            </div>
-        </header>
-
-        <div class="container">
-            <div class="row">
-                
-                    <div class="col-md-6 offset-md-3">
-                      
-                       <br><br>
-<form method="POST" action="{% url 'update_user' %}">
-    {% csrf_token %}
-
-    {{ user_form.as_p }}
-    <br><br>
-    <button type="submit" class="btn btn-secondary">Update Profile</button>
+<style>
+    .profile-page {
+        min-height: 100vh;
+        padding: 140px 0 80px;
+    }
     
-   
-</form>
+    .profile-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .profile-header {
+        text-align: center;
+        margin-bottom: 60px;
+        animation: fadeInDown 0.6s ease-out;
+    }
+    
+    .profile-header h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #666666 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .profile-header p {
+        font-size: 1.125rem;
+        color: var(--text-dim);
+    }
+    
+    .profile-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 48px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-card {
+            padding: 32px 24px;
+        }
+    }
+    
+    .form-group {
+        margin-bottom: 32px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+    }
+    
+    .form-group input {
+        width: 100%;
+        background: var(--surface) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        padding: 16px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus {
+        background: var(--bg) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05) !important;
+        outline: none;
+    }
+    
+    .form-group input::placeholder {
+        color: #666;
+    }
+    
+    .helptext {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        margin-top: 8px;
+        font-style: italic;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 40px;
+    }
+    
+    .form-actions .btn {
+        flex: 1;
+        padding: 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+    
+    .btn-submit {
+        background: var(--text) !important;
+        color: var(--bg) !important;
+        border: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(255, 255, 255, 0.15);
+    }
+    
+    .btn-secondary-link {
+        background: transparent !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary-link:hover {
+        background: var(--surface) !important;
+        transform: translateY(-3px);
+    }
+    
+    .password-link-section {
+        margin-top: 32px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+    
+    .password-link-label {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+        margin-bottom: 16px;
+        display: block;
+    }
+</style>
 
-<br><br>
-<a href="{% url 'update_password' %}" class="btn btn-secondary">Update Password</a>
-
-<br><br>
-<br><br>
-<br><br>
-                        <br><br>
-                        <br><br>
-                        <br><br>
-                        <br><br>
-                        <br><br>
-                    </div>
-               
+<section class="profile-page">
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>Update Profile</h1>
+            <p>Manage your account information</p>
+        </div>
+        
+        <div class="profile-card">
+            <form method="POST" action="{% url 'update_user' %}">
+                {% csrf_token %}
+                
+                {% for field in user_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="helptext">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="error-message" style="color: #ff4444; font-size: 0.875rem; margin-top: 8px;">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-submit">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+            
+            <div class="password-link-section">
+                <span class="password-link-label">Need to change your password?</span>
+                <a href="{% url 'update_password' %}" class="btn btn-secondary-link" style="width: 100%;">
+                    Update Password
+                </a>
             </div>
         </div>
+    </div>
+</section>
+
 {% endblock %}
