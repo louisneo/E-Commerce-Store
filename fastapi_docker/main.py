@@ -9,7 +9,6 @@ from typing import List
 # ==========================================
 # 1️⃣ Correct Django setup BEFORE importing Django modules
 # ==========================================
-# ⚠️ Update this path to point to your Django project root (where manage.py is located)
 django_path = os.path.join(os.path.dirname(__file__), 'django_project')
 sys.path.insert(0, django_path)
 
@@ -21,7 +20,7 @@ django.setup()
 # ==========================================
 from django.contrib.auth.models import User
 from store.models import Product, CartItem, Customer
-from payment.models import Order
+from payment.models import Order, OrderItem  # This Order uses User, not Customer
 
 # ==========================================
 # 3️⃣ Initialize FastAPI app
@@ -147,33 +146,63 @@ def remove_cart(username: str, product_id: int):
 
     return {"message": "🗑️ Item removed from cart"}
 
+
+# ==========================================
+# 6️⃣ Get Orders (FIXED - payment.models.Order uses User, not Customer)
+# ==========================================
 @app.get("/orders/{username}")
 def get_orders(username: str):
-    # 1️⃣ Check if the user exists
-    user = User.objects.filter(username=username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="404: User not found")
+    try:
+        # 1️⃣ Check if the user exists
+        user = User.objects.filter(username=username).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="404: User not found")
 
-    # 2️⃣ Get or create the related Customer record
-    customer, created = Customer.objects.get_or_create(user=user)
+        # 2️⃣ Fetch orders - payment.models.Order has a 'user' ForeignKey
+        orders = Order.objects.filter(user=user).order_by('-date_ordered')
 
-    # 3️⃣ Fetch orders for this customer (if you have an Order model)
-    orders = Order.objects.filter(customer=customer).select_related("product")
+        # 3️⃣ Prepare JSON response
+        orders_data = []
+        for order in orders:
+            # Get order items for this order
+            order_items = OrderItem.objects.filter(order=order)
+            
+            items_list = []
+            for item in order_items:
+                items_list.append({
+                    "product_name": item.product.name if item.product else "Unknown",
+                    "quantity": item.quantity,
+                    "price": float(item.price),
+                    "total": float(item.price) * item.quantity
+                })
+            
+            order_data = {
+                "id": order.id,
+                "full_name": order.full_name,
+                "email": order.email,
+                "shipping_address": order.shipping_address,
+                "amount_paid": float(order.amount_paid),
+                "date_ordered": order.date_ordered.strftime("%Y-%m-%d %H:%M:%S"),
+                "shipped": order.shipped,
+                "date_shipped": order.date_shipped.strftime("%Y-%m-%d %H:%M:%S") if order.date_shipped else None,
+                "items": items_list,
+                "total_items": len(items_list)
+            }
+                
+            orders_data.append(order_data)
 
-    # 4️⃣ Prepare JSON response
-    orders_data = []
-    for order in orders:
-        orders_data.append({
-            "id": order.id,
-            "product": order.product.name if hasattr(order, "product") else None,
-            "quantity": order.quantity,
-            "total_price": float(order.total_price) if hasattr(order, "total_price") else None,
-            "date_ordered": order.date_ordered.strftime("%Y-%m-%d %H:%M:%S") if hasattr(order, "date_ordered") else None,
-        })
-
-    # 5️⃣ Return result
-    return {
-        "username": username,
-        "customer_created": created,
-        "orders": orders_data
-    }
+        # 4️⃣ Return result
+        return {
+            "username": username,
+            "user_id": user.id,
+            "user_email": user.email,
+            "total_orders": len(orders_data),
+            "orders": orders_data
+        }
+        
+    except Exception as e:
+        # Log the actual error for debugging
+        import traceback
+        print(f"Error in get_orders: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

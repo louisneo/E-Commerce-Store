@@ -1,50 +1,364 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    .order-detail-page {
+        min-height: 100vh;
+        padding: 140px 0 80px;
+    }
+    
+    .order-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .order-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        animation: fadeInDown 0.6s ease-out;
+    }
+    
+    .order-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        background: linear-gradient(180deg, #ffffff 0%, #666666 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .order-amount {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--text);
+    }
+    
+    @media (max-width: 768px) {
+        .order-detail-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+    }
+    
+    .order-cards {
+        display: grid;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+    
+    .order-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px;
+        animation: fadeInUp 0.6s ease-out backwards;
+    }
+    
+    .order-card:nth-child(1) { animation-delay: 0.1s; }
+    .order-card:nth-child(2) { animation-delay: 0.2s; }
+    .order-card:nth-child(3) { animation-delay: 0.3s; }
+    
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: var(--text);
+        font-weight: 600;
+        text-align: right;
+    }
+    
+    .shipping-address {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 16px;
+        font-family: 'Space Grotesk', monospace;
+        line-height: 1.8;
+        color: var(--text-dim);
+    }
+    
+    .items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 16px;
+    }
+    
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    
+    .item-row:hover {
+        background: var(--bg);
+    }
+    
+    .item-info {
+        flex: 1;
+    }
+    
+    .item-name {
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+    
+    .item-details {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+    }
+    
+    .item-price {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--text);
+        text-align: right;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-shipped {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .badge-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 2s infinite;
+    }
+    
+    .action-section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px;
+        animation: fadeInUp 0.6s ease-out 0.4s backwards;
+    }
+    
+    .action-btn {
+        width: 100%;
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-ship-action {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 2px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-ship-action:hover {
+        background: #10b981;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-unship-action {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-unship-action:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3);
+    }
+    
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dim);
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 32px;
+        transition: color 0.3s;
+    }
+    
+    .back-link:hover {
+        color: var(--text);
+    }
+</style>
 
-        <div class="container">
-            <div class="row">
-                <center>
-                    <div class="col-8">
-                        <div class="card">
-                            <div class="card-header">
-                               Order {{ order.id }} - ₱{{ order.amount_paid }}
-                            </div>
-                            <div class="card-body">
-                               Email: {{ order.email }} <br>
-                               {% if order.date_shipped %}
-                               Date Shipped: {{ order.date_shipped }}
-                               {% else %}
-                               Date Ordered: {{ order.date_ordered }}
-                               {% endif %}
-                               <br><br>
-                               {{ order.full_name }} <br>
-                               <pre>{{ order.shipping_address }}</pre>
-                                
-                               {% for item in items %}
-                                  {{ item.product }} - {{ item.quantity }} - ₱{{ item.price }} <br>
-
-                               {% endfor %}
-                               <br><br>
-                            {% if not order.shipped %}
-                               <form action="" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="shipping_status" value="true">
-                                <button type="submit" class="btn btn-success">Mark as shipped</button>
-
-                            {% else %}
-                                <form action="" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="shipping_status" value="false">
-                                <button type="submit" class="btn btn-danger">Mark as not shipped</button>
-
-                            {% endif %}
-                               </form>
-                            </div>
+<section class="order-detail-page">
+    <div class="order-detail-container">
+        <a href="javascript:history.back()" class="back-link">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+            </svg>
+            Back to Orders
+        </a>
+        
+        <div class="order-detail-header">
+            <h1 class="order-title">Order #{{ order.id }}</h1>
+            <div class="order-amount">₱{{ order.amount_paid }}</div>
+        </div>
+        
+        <div class="order-cards">
+            <!-- Customer Information -->
+            <div class="order-card">
+                <h2 class="card-title">Customer Information</h2>
+                <div class="info-row">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value">{{ order.full_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ order.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value">
+                        {% if order.shipped %}
+                        <span class="status-badge badge-shipped">
+                            <span class="status-indicator"></span>
+                            Shipped
+                        </span>
+                        {% else %}
+                        <span class="status-badge badge-pending">
+                            <span class="status-indicator"></span>
+                            Pending
+                        </span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Order Details -->
+            <div class="order-card">
+                <h2 class="card-title">Order Details</h2>
+                <div class="info-row">
+                    <span class="info-label">Order ID</span>
+                    <span class="info-value">#{{ order.id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date Ordered</span>
+                    <span class="info-value">{{ order.date_ordered|date:"F d, Y - g:i A" }}</span>
+                </div>
+                {% if order.date_shipped %}
+                <div class="info-row">
+                    <span class="info-label">Date Shipped</span>
+                    <span class="info-value">{{ order.date_shipped|date:"F d, Y - g:i A" }}</span>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <span class="info-label">Total Amount</span>
+                    <span class="info-value" style="font-size: 1.25rem; color: var(--text);">₱{{ order.amount_paid }}</span>
+                </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="order-card">
+                <h2 class="card-title">Shipping Address</h2>
+                <div class="shipping-address">{{ order.shipping_address|linebreaksbr }}</div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="order-card">
+                <h2 class="card-title">Order Items</h2>
+                <div class="items-list">
+                    {% for item in items %}
+                    <div class="item-row">
+                        <div class="item-info">
+                            <div class="item-name">{{ item.product }}</div>
+                            <div class="item-details">Quantity: {{ item.quantity }}</div>
                         </div>
-                        <br><br>
+                        <div class="item-price">₱{{ item.price }}</div>
                     </div>
-                </center>
+                    {% endfor %}
+                </div>
             </div>
         </div>
+        
+        <!-- Action Section -->
+        <div class="action-section">
+            {% if not order.shipped %}
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="shipping_status" value="true">
+                <button type="submit" class="action-btn btn-ship-action">
+                    Mark as Shipped
+                </button>
+            </form>
+            {% else %}
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="shipping_status" value="false">
+                <button type="submit" class="action-btn btn-unship-action">
+                    Mark as Unshipped
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
 {% endblock %}

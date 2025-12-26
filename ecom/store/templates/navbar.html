@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">Luxury Perfumes</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="border: 1px solid rgba(255,255,255,0.1);">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="border: 2px solid rgba(192,192,192,0.3);">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -15,6 +15,17 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'about' %}">About</a>
                 </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="categoriesDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Categories
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'category_summary' %}">All Products</a></li>
+                        <li><hr class="dropdown-divider" style="border-color: rgba(192,192,192,0.2);" /></li>
+                        <li><a class="dropdown-item" href="{% url 'category' 'Fragrance' %}">Fragrance</a></li>
+                    </ul>
+                </li>
 
                 {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
@@ -23,7 +34,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="profileDropdown">
                         <li><a class="dropdown-item" href="{% url 'update_user' %}">User Profile</a></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.08);" /></li>
+                        <li><hr class="dropdown-divider" style="border-color: rgba(192,192,192,0.2);" /></li>
                         <li><a class="dropdown-item" href="{% url 'update_info' %}">User Info</a></li>
                     </ul>
                 </li>
@@ -34,9 +45,9 @@
                         Orders
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-                        <li><a class="dropdown-item" href="{% url 'shipped_dash' %}">Shipped Orders</a></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.08);" /></li>
                         <li><a class="dropdown-item" href="{% url 'not_shipped_dash' %}">Unshipped Orders</a></li>
+                        <li><hr class="dropdown-divider" style="border-color: rgba(192,192,192,0.2);" /></li>
+                        <li><a class="dropdown-item" href="{% url 'shipped_dash' %}">Shipped Orders</a></li>
                     </ul>
                 </li>
                 {% endif %}
@@ -52,17 +63,6 @@
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
                 </li>
                 {% endif %}
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="categoriesDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Categories
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                        <li><a class="dropdown-item" href="{% url 'category_summary' %}">All Products</a></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.08);" /></li>
-                        <li><a class="dropdown-item" href="{% url 'category' 'Fragrance' %}">Fragrance</a></li>
-                    </ul>
-                </li>
             </ul>
             <div class="d-flex">
                 <a href="{% url 'cart_summary' %}" class="btn btn-outline-dark">

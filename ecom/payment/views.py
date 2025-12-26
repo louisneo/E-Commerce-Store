@@ -53,6 +53,7 @@ def not_shipped_dash(request):
     else:
         messages.success(request, "Access Denied")
         return redirect('home')
+        
 def shipped_dash(request):
     if request.user.is_authenticated and request.user.is_superuser:
          orders = Order.objects.filter(shipped = True)
@@ -134,6 +135,10 @@ def process_order(request):
                 if key == "session_key":
                     del request.session[key]
             Profile.objects.filter(user__id=request.user.id).update(old_cart="")
+            
+            # Clear CartItem from database after checkout
+            from store.models import CartItem
+            CartItem.objects.filter(user=request.user).delete()
 
             messages.success(request, "Order Placed!")
             return redirect('home')
@@ -154,63 +159,79 @@ def process_order(request):
 
 def billing_info(request):
     if request.POST:
-        cart = Cart(request)  # Initialize the cart object tied to the current session/request
-        cart_products = cart.get_prods  # Get all products currently in the cart
-        quantities = cart.get_quants  # Get corresponding quantities for each product
-        totals = cart.cart_total()  # Calculate total price of all items in the cart
+        cart = Cart(request)
+        cart_products = cart.get_prods
+        quantities = cart.get_quants
+        totals = cart.cart_total()
 
         my_shipping = request.POST
         request.session['my_shipping'] = my_shipping
         
+        # Save or update shipping address for authenticated users
         if request.user.is_authenticated:
-              billing_form = PaymentForm()
-              return render(request, "payment/billing_info.html", {
-                    "cart_products": cart_products,
-                    "quantities": quantities,
-                    "totals": totals,
-                    "shipping_info": request.POST,
-                    "billing_form": billing_form
-                })
-        else:
-                billing_form = PaymentForm()
-                return render(request, "payment/billing_info.html", {
-                        "cart_products": cart_products,
-                        "quantities": quantities,
-                        "totals": totals,
-                        "shipping_info": request.POST,
-                        "billing_form": billing_form
-                    })
-
-        shipping_form = request.POST
+            try:
+                # Try to get existing shipping address
+                shipping_address = ShippingAddress.objects.get(user=request.user)
+                # Update existing address
+                shipping_address.shipping_full_name = my_shipping.get('shipping_full_name')
+                shipping_address.shipping_email = my_shipping.get('shipping_email')
+                shipping_address.shipping_address1 = my_shipping.get('shipping_address1')
+                shipping_address.shipping_address2 = my_shipping.get('shipping_address2')
+                shipping_address.shipping_city = my_shipping.get('shipping_city')
+                shipping_address.shipping_state = my_shipping.get('shipping_state')
+                shipping_address.shipping_zipcode = my_shipping.get('shipping_zipcode')
+                shipping_address.shipping_country = my_shipping.get('shipping_country')
+                shipping_address.save()
+            except ShippingAddress.DoesNotExist:
+                # Create new shipping address
+                ShippingAddress.objects.create(
+                    user=request.user,
+                    shipping_full_name=my_shipping.get('shipping_full_name'),
+                    shipping_email=my_shipping.get('shipping_email'),
+                    shipping_address1=my_shipping.get('shipping_address1'),
+                    shipping_address2=my_shipping.get('shipping_address2'),
+                    shipping_city=my_shipping.get('shipping_city'),
+                    shipping_state=my_shipping.get('shipping_state'),
+                    shipping_zipcode=my_shipping.get('shipping_zipcode'),
+                    shipping_country=my_shipping.get('shipping_country')
+                )
+        
+        billing_form = PaymentForm()
         return render(request, "payment/billing_info.html", {
-                    "cart_products": cart_products,
-                    "quantities": quantities,
-                    "totals": totals,
-                    "shipping_form": shipping_form
-                })
+            "cart_products": cart_products,
+            "quantities": quantities,
+            "totals": totals,
+            "shipping_info": request.POST,
+            "billing_form": billing_form
+        })
     else:
-         messages.success(request, "Access Denied")
-         return redirect('home')
+        messages.success(request, "Access Denied")
+        return redirect('home')
 
-# Create your views here.
+# FIXED: Added try-except to handle missing ShippingAddress
 def checkout(request):
-    cart = Cart(request)  # Initialize the cart object tied to the current session/request
-    cart_products = cart.get_prods  # Get all products currently in the cart
-    quantities = cart.get_quants  # Get corresponding quantities for each product
-    totals = cart.cart_total()  # Calculate total price of all items in the cart
+    cart = Cart(request)
+    cart_products = cart.get_prods
+    quantities = cart.get_quants
+    totals = cart.cart_total()
     
     if request.user.is_authenticated:
+        try:
+            # Try to get existing shipping address
             shipping_user = ShippingAddress.objects.get(user__id=request.user.id)
-            
             shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
-            return render(request, "payment/checkout.html", {
-                "cart_products": cart_products,
-                "quantities": quantities,
-                "totals": totals,
-                "shipping_form": shipping_form
-            })
-
+        except ShippingAddress.DoesNotExist:
+            # User doesn't have shipping address yet, create empty form
+            shipping_form = ShippingForm(request.POST or None)
+        
+        return render(request, "payment/checkout.html", {
+            "cart_products": cart_products,
+            "quantities": quantities,
+            "totals": totals,
+            "shipping_form": shipping_form
+        })
     else:
+        # Guest checkout
         shipping_form = ShippingForm(request.POST or None)
         return render(request, "payment/checkout.html", {
             "cart_products": cart_products,
@@ -218,8 +239,6 @@ def checkout(request):
             "totals": totals,
             "shipping_form": shipping_form
         })
-
-   
 
 def payment_success(request):
     return render(request, "payment/payment_success.html", {})

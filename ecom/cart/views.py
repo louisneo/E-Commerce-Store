@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+# cart/views.py
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,9 +9,13 @@ from .cart import Cart
 FASTAPI_URL = "http://127.0.0.1:8001"
 
 
-@login_required
+@login_required(login_url='login')  # ✅ FIXED: Redirect to login instead of 404
 def cart_summary(request):
-    from store.models import CartItem  # safe import
+    """
+    Display cart summary for logged-in users
+    Redirects to login if user is not authenticated
+    """
+    from store.models import CartItem
 
     cart_items = CartItem.objects.filter(user=request.user)
     cart_products = []
@@ -42,11 +47,11 @@ def cart_summary(request):
     })
 
 
-
-@login_required
+@login_required(login_url='login')  # ✅ FIXED: Redirect to login
 def cart_add(request):
+    """Add product to cart - requires login"""
     if request.POST.get("action") == "post":
-        from store.models import Product, CartItem  # ✅ moved inside
+        from store.models import Product, CartItem
 
         product_id = int(request.POST.get("product_id"))
         product_qty = int(request.POST.get("product_qty"))
@@ -70,7 +75,7 @@ def cart_add(request):
                 "user_id": request.user.id,
                 "product_id": product_id,
                 "quantity": product_qty,
-            })
+            }, timeout=2)
         except Exception as e:
             print("FastAPI sync failed:", e)
 
@@ -78,10 +83,11 @@ def cart_add(request):
         return JsonResponse({"qty": cart_item.quantity})
 
 
-@login_required
+@login_required(login_url='login')  # ✅ FIXED: Redirect to login
 def cart_delete(request):
+    """Delete product from cart - requires login"""
     if request.POST.get("action") == "post":
-        from store.models import CartItem  # ✅ moved inside
+        from store.models import CartItem
 
         product_id = int(request.POST.get("product_id"))
 
@@ -90,7 +96,7 @@ def cart_delete(request):
         CartItem.objects.filter(user=request.user, product_id=product_id).delete()
 
         try:
-            requests.delete(f"{FASTAPI_URL}/cart/{request.user.id}/{product_id}")
+            requests.delete(f"{FASTAPI_URL}/cart/{request.user.id}/{product_id}", timeout=2)
         except Exception as e:
             print("FastAPI delete sync failed:", e)
 
@@ -98,10 +104,11 @@ def cart_delete(request):
         return JsonResponse({"product": product_id})
 
 
-@login_required
+@login_required(login_url='login')  # ✅ FIXED: Redirect to login
 def cart_update(request):
+    """Update cart quantity - requires login"""
     if request.POST.get("action") == "post":
-        from store.models import CartItem  # ✅ moved inside
+        from store.models import CartItem
 
         product_id = int(request.POST.get("product_id"))
         product_qty = int(request.POST.get("product_qty"))
@@ -118,7 +125,7 @@ def cart_update(request):
                 "user_id": request.user.id,
                 "product_id": product_id,
                 "quantity": product_qty,
-            })
+            }, timeout=2)
         except Exception as e:
             print("FastAPI update sync failed:", e)
 

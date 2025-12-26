@@ -8,15 +8,15 @@
     }
     
     .product-detail-container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 40px;
     }
     
     .product-detail-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 80px;
+        grid-template-columns: 45% 55%;
+        gap: 60px;
         align-items: start;
         animation: fadeInUp 0.8s ease-out;
     }
@@ -31,10 +31,9 @@
     /* Product Image with Hover Zoom */
     .product-image-container {
         position: sticky;
+        left: 400px;
         top: 120px;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0;
+        width: 80%;
     }
     
     .product-image-wrapper {
@@ -71,21 +70,22 @@
         opacity: 1;
     }
     
-    /* Zoomed Result */
     .zoom-result {
         position: absolute;
         top: 0;
-        left: calc(100% + 30px);
-        width: 500px;
-        height: 500px;
+        right: 100%;
+        margin-right: 16px;
+        width: 360px;
+        height: 360px;
         background: var(--card);
         border: 1px solid var(--border);
-        border-radius: 24px;
+        border-radius: 20px;
         overflow: hidden;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.3s;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        transition: opacity 0.25s ease;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+        z-index: 2;
     }
     
     .product-image-wrapper:hover ~ .zoom-result {
@@ -107,6 +107,7 @@
     /* Product Info */
     .product-info {
         animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        width: 100%;
     }
     
     .product-badge {
@@ -128,6 +129,7 @@
         letter-spacing: -0.03em;
         margin-bottom: 20px;
         line-height: 1.2;
+        word-wrap: break-word;
     }
     
     .product-rating {
@@ -148,6 +150,10 @@
         margin-bottom: 32px;
         padding-bottom: 32px;
         border-bottom: 1px solid var(--border);
+        width: 100%;
+        display: block;
+        height: auto;
+        min-height: fit-content;
     }
     
     .product-price-section {
@@ -159,6 +165,7 @@
         align-items: baseline;
         gap: 16px;
         margin-bottom: 12px;
+        flex-wrap: wrap;
     }
     
     .current-price {
@@ -233,10 +240,12 @@
         display: flex;
         gap: 16px;
         margin-bottom: 32px;
+        flex-wrap: wrap;
     }
     
     .btn-add-cart {
         flex: 2;
+        min-width: 200px;
         background: var(--text) !important;
         color: var(--bg) !important;
         border: none !important;
@@ -263,6 +272,7 @@
     
     .btn-back {
         flex: 1;
+        min-width: 150px;
         background: var(--card) !important;
         color: var(--text) !important;
         border: 1px solid var(--border) !important;
@@ -437,10 +447,11 @@
     
     // Calculate zoom ratio
     function initZoom() {
-        cx = result.offsetWidth / lens.offsetWidth;
-        cy = result.offsetHeight / lens.offsetHeight;
-        zoomImg.style.width = (img.width * cx) + "px";
-        zoomImg.style.height = (img.height * cx) + "px";
+         cx = result.offsetWidth / lens.offsetWidth;
+         cy = result.offsetHeight / lens.offsetHeight;
+
+         zoomImg.style.width = (img.width * cx) + "px";
+         zoomImg.style.height = (img.height * cy) + "px";
     }
     
     // Move lens and zoomed image

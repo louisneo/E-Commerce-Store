@@ -1,102 +1,313 @@
 {% extends 'base.html' %}
 {% block content %}
 
-        <!-- Header-->
-        <header class="bg-success py-5">
-            <div class="container px-4 px-lg-5 my-5">
-                <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Billing Info</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">Enter your payment info...</p>
+<style>
+    .billing-hero {
+        padding: 140px 0 80px;
+        text-align: center;
+    }
+    
+    .billing-hero h1 {
+        font-size: clamp(3rem, 7vw, 5rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 20px;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .billing-hero p {
+        font-size: 1.25rem;
+        color: var(--text-dim);
+        animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+    
+    .billing-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 20px 120px;
+    }
+    
+    .billing-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 32px;
+        animation: fadeInUp 0.6s ease-out backwards;
+    }
+    
+    .billing-card h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    
+    .order-item-info {
+        flex: 1;
+    }
+    
+    .order-item-name {
+        font-weight: 600;
+        font-size: 1.125rem;
+        margin-bottom: 4px;
+    }
+    
+    .order-item-qty {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+    }
+    
+    .order-item-price {
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+    
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.75rem;
+        font-weight: 900;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 2px solid var(--border);
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .info-item {
+        padding: 12px 0;
+    }
+    
+    .info-label {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .form-group {
+        margin-bottom: 24px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        background: var(--surface) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        padding: 14px 20px;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 16px;
+        margin-top: 32px;
+    }
+    
+    .btn-update-link {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+    
+    .btn-update-link:hover {
+        background: var(--bg);
+        transform: translateY(-2px);
+    }
+    
+    .btn-pay {
+        width: 100%;
+        background: var(--text) !important;
+        color: var(--bg) !important;
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 32px;
+    }
+    
+    .btn-pay:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(255, 255, 255, 0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .billing-card {
+            padding: 24px;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<section class="billing-hero">
+    <div class="container">
+        <h1>Billing Information</h1>
+        <p>Complete your order with payment details</p>
+    </div>
+</section>
+
+<div class="billing-container">
+    <!-- Order Summary -->
+    <div class="billing-card">
+        <h2>Order Summary</h2>
+        {% for product in cart_products %}
+        <div class="order-item">
+            <div class="order-item-info">
+                <div class="order-item-name">{{ product.name }}</div>
+                <div class="order-item-qty">
+                    Quantity: 
+                    {% for key, value in quantities.items %}
+                        {% if key == product.id|slugify %}
+                            {{ value }}
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
-        </header>
-        <br>
-        <div class="container">
-            <div class="row">
-                
-                    <div class="col-md-6 offset-md-3">
-                        <div class="card">
-                            <div class="card-header">
-                                Order Summary
-                            </div>
-                            <div class="card-body">
-                                {% for product in  cart_products %}
-
-                                    {{ product.name }}:
-                                    {% if product.is_sale %}
-                                      ₱{{ product.sale_price }}
-                                    {% else %}
-                                     ₱{{ product.price }}
-
-
-                                    {% endif %}
-
-                                    <br>
-                                    <small>
-                                    Quantity:
-                                     {% for key, value in quantities.items %}
-                                        {% if key == product.id|slugify %}
-                                            {{ value }}
-                                        {% endif %}
-
-                                    {% endfor %}</small>
-                                    <br><br>
-
-                                    
-                                {% endfor %}
-                                <strong>Total:  ₱{{ totals }}</strong>
-                                <br><br>
-                                <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-secondary">Update Items</a>
-                            
-                            </div>
-                        </div>
-                        <br><br>
-                        <div class="card">
-                            <div class="card-header">
-                               Shipping Info
-                            </div>
-                            <div class="card-body">
-                               
-                               Name: {{ shipping_info.shipping_full_name }} <br>
-                               Email: {{ shipping_info.shipping_email }} <br>
-                               Address1: {{ shipping_info.shipping_address1 }} <br>
-                               Address2: {{ shipping_info.shipping_address2 }} <br>
-                               City: {{ shipping_info.shipping_city }} <br>
-                               State: {{ shipping_info.shipping_state }} <br>
-                               Zipcode: {{ shipping_info.shipping_zipcode }} <br>
-                               Country: {{ shipping_info.shipping_country }} <br>
-                               <br>
-                               <a href="{% url 'checkout' %}" class=" btn btn-outline-secondary">Update Shipping</a>
-                            </div>
-                        </div>
-                        <br> <br>
-                        <div class="card">
-                            <div class="card-header">
-                               Billing Info
-                            </div>
-                            <div class="card-body">
-
-                                <form action="{% url 'process_order' %}" method="POST">
-
-                                   {% csrf_token %}
-                                {{ billing_form.as_p }}
-                
-                               
-                            </div>
-                        </div>
-                        <br>
-
-                        
-                        <button type="submit" class="btn btn-secondary">Pay Now</button>
-                         </form>
-                     
-
-<br><br><br><br><br><br><br><br>
-                    </div>
+            <div class="order-item-price">
+                {% if product.is_sale %}
+                    ₱{{ product.sale_price }}
+                {% else %}
+                    ₱{{ product.price }}
+                {% endif %}
             </div>
         </div>
+        {% endfor %}
+        
+        <div class="order-total">
+            <span>Total:</span>
+            <span>₱{{ totals }}</span>
+        </div>
+        
+        <div class="btn-group">
+            <a href="{% url 'cart_summary' %}" class="btn-update-link">← Update Items</a>
+        </div>
+    </div>
+    
+    <!-- Shipping Information -->
+    <div class="billing-card">
+        <h2>Shipping Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Full Name</div>
+                <div class="info-value">{{ shipping_info.shipping_full_name }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value">{{ shipping_info.shipping_email }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Address</div>
+                <div class="info-value">{{ shipping_info.shipping_address1 }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Address 2</div>
+                <div class="info-value">{{ shipping_info.shipping_address2 }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">City</div>
+                <div class="info-value">{{ shipping_info.shipping_city }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">State</div>
+                <div class="info-value">{{ shipping_info.shipping_state }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Zipcode</div>
+                <div class="info-value">{{ shipping_info.shipping_zipcode }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Country</div>
+                <div class="info-value">{{ shipping_info.shipping_country }}</div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <a href="{% url 'checkout' %}" class="btn-update-link">← Update Shipping</a>
+        </div>
+    </div>
+    
+    <!-- Billing Form -->
+    <div class="billing-card">
+        <h2>Payment Information</h2>
+        <form action="{% url 'process_order' %}" method="POST">
+            {% csrf_token %}
+            {{ billing_form.as_p }}
+            
+            <button type="submit" class="btn-pay">Complete Payment</button>
+        </form>
+    </div>
+</div>
 
-   
-
-
-     {% endblock %}
+{% endblock %}

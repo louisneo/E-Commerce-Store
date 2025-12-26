@@ -8,47 +8,91 @@
     }
     
     .checkout-hero h1 {
+        font-family: 'Orbitron', sans-serif;
         font-size: clamp(3rem, 7vw, 5rem);
         font-weight: 900;
-        letter-spacing: -0.03em;
+        letter-spacing: 2px;
         margin-bottom: 20px;
-        animation: fadeInUp 0.8s ease-out;
+        text-transform: uppercase;
+        background: var(--metal);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeInUp 0.8s ease-out, metalShimmer 3s ease-in-out infinite;
     }
     
     .checkout-hero p {
         font-size: 1.25rem;
-        color: var(--text-dim);
+        color: var(--silver);
         animation: fadeInUp 0.8s ease-out 0.2s backwards;
     }
     
     .checkout-container {
-        max-width: 800px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 60px 20px 120px;
     }
     
     .checkout-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 20px;
+        background: rgba(26, 26, 26, 0.8);
+        backdrop-filter: blur(10px);
+        border: 2px solid var(--silver);
+        border-radius: 24px;
         padding: 40px;
-        margin-bottom: 32px;
+        margin-bottom: 40px;
         animation: fadeInUp 0.6s ease-out backwards;
+        box-shadow: 0 8px 32px rgba(192, 192, 192, 0.2);
+        position: relative;
+    }
+    
+    .checkout-card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: var(--chrome);
+        border-radius: 24px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        animation: rotateBorder 4s linear infinite;
+    }
+    
+    .checkout-card:hover::before {
+        opacity: 0.3;
     }
     
     .checkout-card h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border);
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid;
+        border-image: var(--metal) 1;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: var(--metal);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .order-item {
         display: flex;
         justify-content: space-between;
-        padding: 16px 0;
-        border-bottom: 1px solid var(--border);
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(192, 192, 192, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .order-item:hover {
+        padding-left: 10px;
+        background: rgba(192, 192, 192, 0.05);
+        border-radius: 8px;
     }
     
     .order-item:last-child {
@@ -56,95 +100,157 @@
     }
     
     .order-item-name {
-        font-weight: 600;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .order-item-qty {
         font-size: 0.875rem;
-        color: var(--text-dim);
-        margin-top: 4px;
+        color: var(--silver);
+        margin-top: 6px;
+        font-weight: 600;
+    }
+    
+    .order-item-price {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 900;
+        background: var(--metal);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .order-total {
         display: flex;
         justify-content: space-between;
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 2px solid var(--border);
+        align-items: center;
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 3px solid;
+        border-image: var(--metal) 1;
+        font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase;
+    }
+    
+    .order-total span:last-child {
+        background: var(--metal);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: priceGlow 3s ease-in-out infinite;
     }
     
     .form-group {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
     }
     
     .form-group label {
         display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--text-dim);
-        margin-bottom: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--silver);
+        margin-bottom: 10px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
+        font-family: 'Orbitron', sans-serif;
     }
     
     .form-group input,
     .form-group textarea,
     .form-group select {
         width: 100%;
-        background: var(--surface) !important;
-        border: 1px solid var(--border) !important;
+        background: rgba(10, 10, 10, 0.8) !important;
+        border: 2px solid var(--silver) !important;
         border-radius: 12px !important;
         color: var(--text) !important;
-        padding: 14px 20px;
+        padding: 16px 20px;
         font-size: 1rem;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
+        font-family: 'Space Grotesk', sans-serif;
     }
     
     .form-group input:focus,
     .form-group textarea:focus,
     .form-group select:focus {
         outline: none;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        border-color: rgba(192, 192, 192, 0.8) !important;
+        box-shadow: 0 0 0 4px rgba(192, 192, 192, 0.15), 0 0 20px rgba(192, 192, 192, 0.3);
+        background: rgba(10, 10, 10, 0.95) !important;
     }
     
     .btn-continue {
         width: 100%;
-        background: var(--text) !important;
-        color: var(--bg) !important;
-        padding: 18px;
-        border-radius: 12px;
-        font-size: 1.125rem;
-        font-weight: 700;
+        background: var(--metal) !important;
+        color: #000 !important;
+        padding: 20px;
+        border-radius: 16px;
+        font-size: 1.1rem;
+        font-weight: 900;
         border: none;
         cursor: pointer;
-        transition: all 0.3s;
-        margin-top: 24px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 32px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: 'Orbitron', sans-serif;
+        box-shadow: 0 6px 20px rgba(192, 192, 192, 0.4), 
+                    inset 0 -3px 8px rgba(0, 0, 0, 0.3),
+                    inset 0 2px 5px rgba(255, 255, 255, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-continue::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: buttonShine 3s infinite;
     }
     
     .btn-continue:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 24px rgba(255, 255, 255, 0.2);
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(192, 192, 192, 0.6), 
+                    inset 0 -3px 8px rgba(0, 0, 0, 0.3),
+                    inset 0 2px 5px rgba(255, 255, 255, 0.6);
     }
     
     .btn-update-items {
-        background: var(--surface);
-        color: var(--text);
-        border: 1px solid var(--border);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 0.875rem;
-        font-weight: 600;
+        background: transparent;
+        color: var(--silver);
+        border: 2px solid var(--silver);
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
         text-decoration: none;
         display: inline-block;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Orbitron', sans-serif;
     }
     
     .btn-update-items:hover {
-        background: var(--bg);
+        background: rgba(192, 192, 192, 0.1);
         transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(192, 192, 192, 0.3);
+        color: var(--text);
+    }
+    
+    /* Hide Django's default paragraph wrappers */
+    form p {
+        margin: 0;
+        padding: 0;
     }
     
     @keyframes fadeInUp {
@@ -156,6 +262,26 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+    
+    @keyframes metalShimmer {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.3); }
+    }
+    
+    @keyframes priceGlow {
+        0%, 100% { filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.3)); }
+        50% { filter: drop-shadow(0 0 15px rgba(192, 192, 192, 0.6)); }
+    }
+    
+    @keyframes rotateBorder {
+        0% { filter: hue-rotate(0deg); }
+        100% { filter: hue-rotate(360deg); }
+    }
+    
+    @keyframes buttonShine {
+        0% { left: -100%; }
+        50%, 100% { left: 100%; }
     }
 </style>
 
@@ -197,7 +323,7 @@
             <span>₱{{ totals }}</span>
         </div>
         
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 24px;">
             <a href="{% url 'cart_summary' %}" class="btn-update-items">← Update Items</a>
         </div>
     </div>
@@ -206,10 +332,50 @@
         <h2>Shipping Information</h2>
         <form action="{% url 'billing_info' %}" method="POST">
             {% csrf_token %}
-            {{ shipping_form.as_p }}
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_full_name.id_for_label }}">Full Name *</label>
+                {{ shipping_form.shipping_full_name }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_email.id_for_label }}">Email *</label>
+                {{ shipping_form.shipping_email }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_address1.id_for_label }}">Address Line 1 *</label>
+                {{ shipping_form.shipping_address1 }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_address2.id_for_label }}">Address Line 2</label>
+                {{ shipping_form.shipping_address2 }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_city.id_for_label }}">City *</label>
+                {{ shipping_form.shipping_city }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_state.id_for_label }}">State/Province</label>
+                {{ shipping_form.shipping_state }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_zipcode.id_for_label }}">ZIP Code *</label>
+                {{ shipping_form.shipping_zipcode }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ shipping_form.shipping_country.id_for_label }}">Country *</label>
+                {{ shipping_form.shipping_country }}
+            </div>
+            
             <button type="submit" class="btn-continue">Continue to Payment</button>
         </form>
     </div>
 </div>
 
-{% endblock %}
+{% endblock %}0000000

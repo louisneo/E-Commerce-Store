@@ -1,11 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 
-<!-- Hero Section -->
+<!-- Model Viewer -->
+<script type="module"
+  src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+</script>
+
+<!-- ================= HERO SECTION ================= -->
 <section class="hero">
     <div class="container">
         <h1>The future of fragrance.</h1>
-        <p>Discover our curated collection of luxury perfumes. Each scent tells a story, crafted with precision and passion.</p>
+        <p>
+            Discover our curated collection of luxury perfumes.
+            Each scent tells a story, crafted with precision and passion.
+        </p>
         <div class="hero-cta">
             <a href="#products" class="btn btn-primary">Explore Collection</a>
             <a href="{% url 'about' %}" class="btn btn-secondary">Learn More</a>
@@ -13,30 +22,77 @@
     </div>
 </section>
 
-<!-- Products Section -->
+<!-- ================= SIDE-BY-SIDE 3D MODELS ================= -->
+<section class="featured-3d">
+    <div class="container">
+
+        <div class="section-header">
+            <h2>Experience the Collection</h2>
+            <p>Interact with our signature fragrances in 3D</p>
+        </div>
+
+        <div style="display:flex; gap:40px; align-items:center;">
+
+            <!-- 3D MODEL 1 -->
+            <model-viewer
+                src="{% static 'models/perfume.glb' %}"
+                alt="Luxury Perfume"
+                camera-controls
+                auto-rotate
+                exposure="1"
+                shadow-intensity="1"
+                style="width:50%; height:500px;">
+            </model-viewer>
+
+            <!-- 3D MODEL 2 -->
+            <model-viewer
+                src="{% static 'models/creed.glb' %}"
+                alt="Luxury Perfume"
+                camera-controls
+                auto-rotate
+                exposure="1"
+                shadow-intensity="1"
+                style="width:50%; height:500px;">
+            </model-viewer>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ================= PRODUCTS SECTION ================= -->
 <section class="products-section" id="products">
     <div class="container">
         <div class="section-header">
             <h2>Premium Collection</h2>
             <p>Handpicked fragrances for the modern connoisseur</p>
         </div>
-        
+
         <div class="product-grid">
             {% for product in products %}
             <div class="product-card">
+
                 {% if product.is_sale %}
                 <div class="sale-badge">SALE</div>
                 {% endif %}
-                
-                <a href="{% url 'product' product.id %}" style="text-decoration: none; color: inherit;">
+
+                <a href="{% url 'product' product.id %}"
+                   style="text-decoration:none; color:inherit;">
+
                     <div class="product-image-wrapper">
-                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                        <img
+                            class="product-image"
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                        />
                     </div>
-                    
+
                     <div class="product-info">
                         <h3 class="product-name">{{ product.name }}</h3>
-                        <p class="product-description">{{ product.description }}</p>
-                        
+                        <p class="product-description">
+                            {{ product.description }}
+                        </p>
+
                         <div class="product-price">
                             {% if product.is_sale %}
                                 <span class="price-current">₱{{ product.sale_price }}</span>
@@ -45,12 +101,12 @@
                                 <span class="price-current">₱{{ product.price }}</span>
                             {% endif %}
                         </div>
-                        
-                        <button class="btn btn-primary" type="button">
-    View Details
-</button>
 
+                        <button class="btn btn-primary" type="button">
+                            View Details
+                        </button>
                     </div>
+
                 </a>
             </div>
             {% endfor %}

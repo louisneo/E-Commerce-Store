@@ -1,43 +1,289 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    .orders-page {
+        min-height: 100vh;
+        padding: 140px 0 80px;
+    }
+    
+    .orders-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .orders-header {
+        text-align: center;
+        margin-bottom: 60px;
+        animation: fadeInDown 0.6s ease-out;
+    }
+    
+    .orders-header h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #666666 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .orders-header p {
+        font-size: 1.125rem;
+        color: var(--text-dim);
+    }
+    
+    .orders-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+    
+    .orders-table-container {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .orders-table thead {
+        background: var(--surface);
+        border-bottom: 2px solid var(--border);
+    }
+    
+    .orders-table th {
+        padding: 20px 16px;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .orders-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.2s;
+    }
+    
+    .orders-table tbody tr:hover {
+        background: var(--surface);
+    }
+    
+    .orders-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .orders-table td {
+        padding: 20px 16px;
+        color: var(--text);
+    }
+    
+    .order-id {
+        font-weight: 700;
+        color: var(--text);
+        text-decoration: none;
+        transition: opacity 0.3s;
+    }
+    
+    .order-id:hover {
+        opacity: 0.7;
+    }
+    
+    .order-price {
+        font-weight: 700;
+        font-size: 1.125rem;
+    }
+    
+    .order-email {
+        color: var(--text-dim);
+        font-size: 0.95rem;
+    }
+    
+    .order-date {
+        color: var(--text-dim);
+        font-size: 0.95rem;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-shipped {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .action-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-unship {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .btn-unship:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-dim);
+    }
+    
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+        opacity: 0.3;
+    }
+    
+    @media (max-width: 768px) {
+        .orders-table-container {
+            overflow-x: auto;
+        }
+        
+        .orders-table {
+            min-width: 800px;
+        }
+    }
+</style>
 
-        <div class="container">
-            <div class="row">
-                <center>
-                    <div class="col-8">
-                        <h3>Shipped Items</h3>
-                         <table class="table table-striped table-hover table-bordered">
-                            <thead class="table-dark">
-                                <tr>
-                                <th scope="col">Orders</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Customer Email</th>
-                                <th scope="col">Date Shipped</th>
-                                <th scope="col">Shipped</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              {% for item in orders %}
-                                <tr>
-                                <td><a href="{% url 'orders' item.id %}">{{ item.id }}</a></td>
-                                <td>₱{{ item.amount_paid }}</td>
-                                <td>{{ item.email }}</td>
-                                <td>{{ item.date_shipped }}</td>
-                                  <td>
-                                <form action="" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="shipping_status" value="false">
-                                <input type="hidden" name="num" value = {{ item.id }}>
-                                <button type="submit" class="btn btn-danger btn-sm">Mark shipped</button>
-                                </td>
-                                </tr>
-                              {% endfor %}
-                            </tbody>
-                         </table>
-                        <br><br>
-                    </div>
-                </center>
+<section class="orders-page">
+    <div class="orders-container">
+        <div class="orders-header">
+            <h1>Shipped Orders</h1>
+            <p>Orders that have been shipped to customers</p>
+        </div>
+        
+        {% if orders %}
+        <div class="orders-stats">
+            <div class="stat-card">
+                <div class="stat-value">{{ orders|length }}</div>
+                <div class="stat-label">Total Shipped</div>
             </div>
         </div>
+        
+        <div class="orders-table-container">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Amount</th>
+                        <th>Customer</th>
+                        <th>Date Shipped</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in orders %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'orders' item.id %}" class="order-id">
+                                #{{ item.id }}
+                            </a>
+                        </td>
+                        <td class="order-price">₱{{ item.amount_paid }}</td>
+                        <td class="order-email">{{ item.email }}</td>
+                       <td class="order-date">{{ item.date_shipped|date:"M d, Y" }}</td>
+
+                        <td>
+                            <span class="status-badge status-shipped">
+                                <span class="status-indicator"></span>
+                                Shipped
+                            </span>
+                        </td>
+                        <td>
+                            <form action="" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="shipping_status" value="false">
+                                <input type="hidden" name="num" value="{{ item.id }}">
+                                <button type="submit" class="action-btn btn-unship">
+                                    Mark Unshipped
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <svg class="empty-icon" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z"/>
+            </svg>
+            <h3 style="font-size: 1.5rem; margin-bottom: 8px;">No shipped orders</h3>
+            <p>All orders are currently unshipped</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
 {% endblock %}
